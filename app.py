@@ -5,7 +5,7 @@ from flask import jsonify
 app = Flask(__name__, static_url_path='')
 CORS(app)
 
-PREFIX = ''
+PREFIX = '/viz'
 
 @app.route( PREFIX + '/js/<path:path>')
 def send_js(path):
