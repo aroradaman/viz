@@ -1,0 +1,219 @@
+
+<html lang="en">
+<head>
+	<title>three.js - gpu particle system</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			background-color: #000000;
+			margin: 0px;
+			overflow: hidden;
+		}
+		a {
+			color: #0078ff;
+		}
+		.dg {
+			right: auto!important;
+			left: 20px!important;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/application.css" />
+</head>
+
+<body style="padding:0; margin:0;">
+		<input type="hidden" id="fdata" val="{}">
+		<audio id="audioElement" src="/audio/1.mp3"></audio>
+		<!-- <div>
+			<button onclick="document.getElementById('audioElement').play()">Play the Audio</button>
+			<button onclick="document.getElementById('audioElement').pause()">Pause the Audio</button>
+			<button onclick="document.getElementById('audioElement').volume+=0.1">Increase Volume</button>
+			<button onclick="document.getElementById('audioElement').volume-=0.1">Decrease Volume</button>
+		</div> -->
+		<script src="/js/jquery-2.1.3.min.js"></script>
+		<script src="/js/d3.v3.min.js" charset="utf-8"></script>
+		<script src="/js/app.js"></script>
+		<script type="text/javascript">
+		$(document).on('ready',function(){
+			document.getElementById('audioElement').play()
+		})
+			
+		</script>
+	
+	<script src="/js/three.js"></script>
+	<script src="/js/controls/TrackballControls.js"></script>
+	<script src="/js/libs/dat.gui.min.js"></script>
+	<script src="/js/GPUParticleSystem.js" charset="utf-8"></script>
+
+	<script>
+
+		var CONST = 260
+		var SIZE_MULT = 25
+		var TURBULENCE_MULT = 0
+		var LIFETIME_MULT = 5
+		var SPAWN_RATE_MULT = 300
+		var POSITION_RANDOMNESS_RATE = 2
+		var SIZE_RANDOMNESS_RATE = 5
+		var MAX_RAD_X = 55;
+		var MAX_RAD_Y = 22;
+		var MAX_RAD_Z = 40;
+
+		var camera, tick = 0,
+			scene, renderer, clock = new THREE.Clock(true),
+			controls, container, gui = new dat.GUI(),
+			options, spawnerOptions, particleSystem;
+		init();
+		animate();
+		function init() {
+
+
+			container = document.createElement('div');
+			document.body.appendChild(container);
+			camera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 1, 10000);
+			camera.position.z = 100;
+			scene = new THREE.Scene();
+			particleSystem = new THREE.GPUParticleSystem({
+				maxParticles: 250000
+			});
+			scene.add( particleSystem);
+			options = {
+				position: new THREE.Vector3(),
+				positionRandomness: .8,
+				velocity: new THREE.Vector3(),
+				velocityRandomness: .5,
+				color: 0xbb88ff,
+				// color: 'rbg(255,10,200)',
+				colorRandomness: .9,
+				turbulence: .5,
+				lifetime: 2,
+				size: 5,
+				sizeRandomness: 1
+			};
+			spawnerOptions = {
+				spawnRate: 15000,
+				horizontalSpeed: 1.5,
+				verticalSpeed: 1.33,
+				timeScale: 1
+			};
+			gui.add(options, "velocityRandomness", 0, 3);
+			gui.add(options, "positionRandomness", 0, 3);
+			gui.add(options, "size", 1, 200);
+			gui.add(options, "sizeRandomness", 0, 250);
+			gui.add(options, "colorRandomness", 0, 1);
+			gui.add(options, "lifetime", .1, 100);
+			gui.add(options, "turbulence", 0, 10);
+			gui.add(spawnerOptions, "spawnRate", 10, 3000000);
+			gui.add(spawnerOptions, "timeScale", -1, 1);
+
+			renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+			// setup controls
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			controls.rotateSpeed = 5.0;
+			controls.zoomSpeed = 2.2;
+			controls.panSpeed = 1;
+			controls.dynamicDampingFactor = 0.3;
+			window.addEventListener('resize', onWindowResize, false);
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+
+		function animate() {
+			$('.dg').html('');
+			requestAnimationFrame(animate);
+
+			
+			var delta = clock.getDelta() * spawnerOptions.timeScale;
+			tick += delta;
+			if (tick < 0) tick = 0;
+			if (delta > 0) {
+
+				try {
+					var fData = JSON.parse($('#fdata').val());
+				}catch(error){
+					var fData = {};
+				}
+				var now = 0;
+				var angles = []
+				var count = Object.keys(fData).length;
+
+				var _av = 0;
+				for (var i = 0; i < count; i++) {
+					angles.push(360/count * i);
+				}
+
+				for (var indx in fData) {
+        			if (fData.hasOwnProperty(indx)) {
+						
+						setProps(fData[indx], options, spawnerOptions);
+						setPos(fData[indx], angles[now], options, camera);
+
+						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 30;
+
+						for (var x = 0; x < spawnerOptions.spawnRate * delta; x++) {
+							particleSystem.spawnParticle(options);
+						}
+					_av += fData[indx]
+					now++;
+					}
+				}
+			}
+			_av = _av/count;
+			
+			camera.position.x = Math.sin(2*_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/70;
+			camera.position.y = Math.cos(2*_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/70;
+			controls.rotateSpeed = 5 + 5*_av;
+
+			controls.update();
+			particleSystem.update(tick);
+			render();
+		}
+		
+		function setPos(amp, angle, options){
+
+			_rad = angle*Math.PI/180
+			options.position.x = Math.sin(_rad) * amp/CONST * MAX_RAD_X;
+			options.position.y = Math.cos(_rad) * amp/CONST * MAX_RAD_Y;
+			// options.position.z = amp/CONST * MAX_RAD_Z;
+			// camera.position.z = 15 + _ratio
+			// console.log(_rad, options.position.x)
+		}
+
+		function setProps(amp, options, spawnerOptions){
+			
+			_ratio = amp /  CONST;
+			
+			if (_ratio<0.05){
+				_ratio = 0.05
+			}
+
+			options.size = _ratio * SIZE_MULT;
+			options.lifetime = _ratio* LIFETIME_MULT;
+			options.positionRandomness = _ratio * POSITION_RANDOMNESS_RATE;
+			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;
+			
+
+			// _col = 255 * _ratio
+			// var _temp_col = 'rgb(' + (255-_col) + ', ' + ~~(Math.random()*155) + ', ' + (_col) + ')';
+			// _temp_col = 'rbg(150,150,150)'
+			// options.color = _temp_col
+
+			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
+			spawnerOptions.spawnRate = 10 + _ratio * SPAWN_RATE_MULT;
+
+
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>
