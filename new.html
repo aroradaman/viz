@@ -48,14 +48,14 @@
 	<script>
 
 		var CONST = 260
-		var SIZE_MULT = 25
+		var SIZE_MULT = 20
 		var TURBULENCE_MULT = 0
 		var LIFETIME_MULT = 5
-		var SPAWN_RATE_MULT = 300
-		var POSITION_RANDOMNESS_RATE = 2
-		var SIZE_RANDOMNESS_RATE = 5
-		var MAX_RAD_X = 55;
-		var MAX_RAD_Y = 22;
+		var SPAWN_RATE_MULT = 150
+		var POSITION_RANDOMNESS_RATE = 1.5
+		var SIZE_RANDOMNESS_RATE = 15
+		var MAX_RAD_X = 45;
+		var MAX_RAD_Y = 18;
 		var MAX_RAD_Z = 40;
 
 		var camera, tick = 0,
@@ -154,7 +154,7 @@
 						setProps(fData[indx], options, spawnerOptions);
 						setPos(fData[indx], angles[now], options, camera);
 
-						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 30;
+						options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 30;
 
 						for (var x = 0; x < spawnerOptions.spawnRate * delta; x++) {
 							particleSystem.spawnParticle(options);
@@ -206,7 +206,7 @@
 
 			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
 			spawnerOptions.spawnRate = 10 + _ratio * SPAWN_RATE_MULT;
-
+			spawnerOptions.timeScale = 0.5 + (_ratio*0.5);
 
 		}
 
