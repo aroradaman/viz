@@ -32,7 +32,7 @@
 		</div> -->
 		<script src="https://code.jquery.com/jquery-2.x-git.min.js"></script>
 		<script src="/viz/js/d3.v3.min.js" charset="utf-8"></script>
-		<script src="/viz/js/app.js"></script>
+		<!-- <script src="/viz/js/app.js"></script> -->
 		<script type="text/javascript">
 		$(document).on('ready',function(){
 			document.getElementById('audioElement').play()
@@ -57,14 +57,33 @@
 		var MAX_RAD_Y = 18;
 		var MAX_RAD_Z = 40;
 
+		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		var audioElement = document.getElementById('audioElement');
+		var audioSrc = audioCtx.createMediaElementSource(audioElement);
+		var analyser = audioCtx.createAnalyser();
+			
+		// Bind our analyser to the media element source.
+		audioSrc.connect(analyser);
+		audioSrc.connect(audioCtx.destination);
+		var frequencyData = new Uint8Array(200);
+
+		function renderChart() {
+			requestAnimationFrame(renderChart);
+			analyser.getByteFrequencyData(frequencyData);
+			$('#fdata').val(JSON.stringify(frequencyData));
+		}
+
+		renderChart();
+
 		var camera, tick = 0,
 			scene, renderer, clock = new THREE.Clock(true),
 			controls, container, gui = new dat.GUI(),
 			options, spawnerOptions, particleSystem;
+		
 		init();
 		animate();
+		
 		function init() {
-
 
 			container = document.createElement('div');
 			document.body.appendChild(container);
@@ -127,11 +146,14 @@
 			$('.dg').html('');
 			requestAnimationFrame(animate);
 
-			
 			var delta = clock.getDelta() * spawnerOptions.timeScale;
 			tick += delta;
+
 			if (tick < 0) tick = 0;
+
 			if (delta > 0) {
+
+
 
 				try {
 					var fData = JSON.parse($('#fdata').val());
@@ -153,7 +175,10 @@
 						setProps(fData[indx], options, spawnerOptions);
 						setPos(fData[indx], angles[now], options, camera);
 
-						options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 30;
+						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 30;
+						camera.position.x = 100;
+						camera.position.y = 100;
+						camera.position.z = 100;
 
 						for (var x = 0; x < spawnerOptions.spawnRate * delta; x++) {
 							particleSystem.spawnParticle(options);
