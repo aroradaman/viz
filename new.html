@@ -41,7 +41,6 @@
 		</script>
 	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
-	<script src="/viz/js/controls/TrackballControls.js"></script>
 	<script src="/viz/js/libs/dat.gui.min.js"></script>
 	<script src="/viz/js/GPUParticleSystem.js" charset="utf-8"></script>
 
@@ -110,11 +109,11 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			container.appendChild(renderer.domElement);
 			// setup controls
-			controls = new THREE.TrackballControls(camera, renderer.domElement);
-			controls.rotateSpeed = 5.0;
-			controls.zoomSpeed = 2.2;
-			controls.panSpeed = 1;
-			controls.dynamicDampingFactor = 0.3;
+			// controls = new THREE.TrackballControls(camera, renderer.domElement);
+			// controls.rotateSpeed = 5.0;
+			// controls.zoomSpeed = 2.2;
+			// controls.panSpeed = 1;
+			// controls.dynamicDampingFactor = 0.3;
 			window.addEventListener('resize', onWindowResize, false);
 		}
 
@@ -168,9 +167,9 @@
 			
 			camera.position.x = Math.sin(2*_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/70;
 			camera.position.y = Math.cos(2*_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/70;
-			controls.rotateSpeed = 5 + 5*_av;
+			// controls.rotateSpeed = 5 + 5*_av;
 
-			controls.update();
+			// controls.update();
 			particleSystem.update(tick);
 			render();
 		}
