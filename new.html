@@ -30,8 +30,8 @@
 			<button onclick="document.getElementById('audioElement').volume+=0.1">Increase Volume</button>
 			<button onclick="document.getElementById('audioElement').volume-=0.1">Decrease Volume</button>
 		</div> -->
-		<script src="https://code.jquery.com/jquery-2.x-git.min.js"></script>
-		<script src="/viz/js/d3.v3.min.js" charset="utf-8"></script>
+		<script src="http://code.jquery.com/jquery-2.x-git.min.js"></script>
+		<!-- <script src="/viz/js/d3.v3.min.js" charset="utf-8"></script> -->
 		<!-- <script src="/viz/js/app.js"></script> -->
 		<script type="text/javascript">
 		$(document).on('ready',function(){
@@ -40,21 +40,21 @@
 			
 		</script>
 	
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
 	<script src="/viz/js/libs/dat.gui.min.js"></script>
 	<script src="/viz/js/GPUParticleSystem.js" charset="utf-8"></script>
 
 	<script>
 
-		var CONST = 260
-		var SIZE_MULT = 20
-		var TURBULENCE_MULT = 0
-		var LIFETIME_MULT = 5
-		var SPAWN_RATE_MULT = 150
-		var POSITION_RANDOMNESS_RATE = 1.5
-		var SIZE_RANDOMNESS_RATE = 15
-		var MAX_RAD_X = 45;
-		var MAX_RAD_Y = 18;
+		var CONST = 250
+		var SIZE_MULT = 30
+		var TURBULENCE_MULT = 5
+		var LIFETIME_MULT = 3
+		var SPAWN_RATE_MULT = 200
+		var POSITION_RANDOMNESS_RATE = 1
+		var SIZE_RANDOMNESS_RATE = 25
+		var MAX_RAD_X = 50;
+		var MAX_RAD_Y = 20;
 		var MAX_RAD_Z = 40;
 
 		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -66,14 +66,6 @@
 		audioSrc.connect(analyser);
 		audioSrc.connect(audioCtx.destination);
 		var frequencyData = new Uint8Array(200);
-
-		function renderChart() {
-			requestAnimationFrame(renderChart);
-			analyser.getByteFrequencyData(frequencyData);
-			$('#fdata').val(JSON.stringify(frequencyData));
-		}
-
-		renderChart();
 
 		var camera, tick = 0,
 			scene, renderer, clock = new THREE.Clock(true),
@@ -145,6 +137,9 @@
 		function animate() {
 			$('.dg').html('');
 			requestAnimationFrame(animate);
+			
+			analyser.getByteFrequencyData(frequencyData);
+			var fData = frequencyData;
 
 			var delta = clock.getDelta() * spawnerOptions.timeScale;
 			tick += delta;
@@ -155,11 +150,11 @@
 
 
 
-				try {
-					var fData = JSON.parse($('#fdata').val());
-				}catch(error){
-					var fData = {};
-				}
+				// try {
+				// 	var fData = JSON.parse($('#fdata').val());
+				// }catch(error){
+				// 	var fData = {};
+				// }
 				var now = 0;
 				var angles = []
 				var count = Object.keys(fData).length;
@@ -230,7 +225,7 @@
 
 			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
 			spawnerOptions.spawnRate = 10 + _ratio * SPAWN_RATE_MULT;
-			spawnerOptions.timeScale = 0.5 + (_ratio*0.5);
+			spawnerOptions.timeScale = 0.7 + (_ratio*0.3);
 
 		}
 
