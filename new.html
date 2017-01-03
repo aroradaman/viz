@@ -46,16 +46,16 @@
 
 	<script>
 
-		var CONST = 250
-		var SIZE_MULT = 30
-		var TURBULENCE_MULT = 5
-		var LIFETIME_MULT = 3
-		var SPAWN_RATE_MULT = 200
-		var POSITION_RANDOMNESS_RATE = 1
-		var SIZE_RANDOMNESS_RATE = 25
+		var CONST = 255
+		var SIZE_MULT = 20
+		var TURBULENCE_MULT = 10
+		var LIFETIME_MULT = 4
+		var SPAWN_RATE_MULT = 500
+		var POSITION_RANDOMNESS_RATE = 0.05
+		var SIZE_RANDOMNESS_RATE = 0.15
 		var MAX_RAD_X = 50;
-		var MAX_RAD_Y = 20;
-		var MAX_RAD_Z = 40;
+		var MAX_RAD_Y = 22;
+		var MAX_RAD_Z = 10;
 
 		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 		var audioElement = document.getElementById('audioElement');
@@ -148,13 +148,6 @@
 
 			if (delta > 0) {
 
-
-
-				// try {
-				// 	var fData = JSON.parse($('#fdata').val());
-				// }catch(error){
-				// 	var fData = {};
-				// }
 				var now = 0;
 				var angles = []
 				var count = Object.keys(fData).length;
@@ -170,10 +163,10 @@
 						setProps(fData[indx], options, spawnerOptions);
 						setPos(fData[indx], angles[now], options, camera);
 
-						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 30;
-						camera.position.x = 100;
-						camera.position.y = 100;
-						camera.position.z = 100;
+						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 40;
+						camera.position.x = 0;
+						camera.position.y = 0;
+						// camera.position.z = 100;
 
 						for (var x = 0; x < spawnerOptions.spawnRate * delta; x++) {
 							particleSystem.spawnParticle(options);
@@ -185,11 +178,12 @@
 			}
 			_av = _av/count;
 			
-			camera.position.x = Math.sin(2*_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/70;
-			camera.position.y = Math.cos(2*_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/70;
+			camera.position.x = Math.sin(_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/250;
+			camera.position.y = Math.cos(_av/CONST*Math.PI) * _av/CONST * MAX_RAD_Y/250;
+			
 			// controls.rotateSpeed = 5 + 5*_av;
-
 			// controls.update();
+
 			particleSystem.update(tick);
 			render();
 		}
@@ -199,7 +193,8 @@
 			_rad = angle*Math.PI/180
 			options.position.x = Math.sin(_rad) * amp/CONST * MAX_RAD_X;
 			options.position.y = Math.cos(_rad) * amp/CONST * MAX_RAD_Y;
-			// options.position.z = amp/CONST * MAX_RAD_Z;
+			// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 40;
+			options.position.z = amp/CONST * MAX_RAD_Z;
 			// camera.position.z = 15 + _ratio
 			// console.log(_rad, options.position.x)
 		}
@@ -215,17 +210,18 @@
 			options.size = _ratio * SIZE_MULT;
 			options.lifetime = _ratio* LIFETIME_MULT;
 			options.positionRandomness = _ratio * POSITION_RANDOMNESS_RATE;
-			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;
-			
+			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;			
 
 			// _col = 255 * _ratio
-			// var _temp_col = 'rgb(' + (255-_col) + ', ' + ~~(Math.random()*155) + ', ' + (_col) + ')';
-			// _temp_col = 'rbg(150,150,150)'
+			// // console.log(_col)
+			// // var _temp_col = 'rgb(' + (_col) + ', ' + (_col) + ', ' + (_col) + ')';
+			// var _temp_col = 'rgb(' + (150) + ', ' + (_col) + ', ' + (150) + ')';
+			// // _temp_col = 'rbg(150,150,150)'
 			// options.color = _temp_col
 
 			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
-			spawnerOptions.spawnRate = 10 + _ratio * SPAWN_RATE_MULT;
-			spawnerOptions.timeScale = 0.7 + (_ratio*0.3);
+			spawnerOptions.spawnRate = _ratio * SPAWN_RATE_MULT;
+			// spawnerOptions.timeScale = 0.5 + (_ratio*0.5);
 
 		}
 
