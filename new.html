@@ -18,7 +18,6 @@
 			left: 20px!important;
 		}
 	</style>
-	<link rel="stylesheet" href="/viz/css/application.css" />
 </head>
 
 <body style="padding:0; margin:0;">
@@ -30,21 +29,16 @@
 			<button onclick="document.getElementById('audioElement').volume+=0.1">Increase Volume</button>
 			<button onclick="document.getElementById('audioElement').volume-=0.1">Decrease Volume</button>
 		</div> -->
-		<script src="http://code.jquery.com/jquery-2.x-git.min.js"></script>
-		<!-- <script src="/viz/js/d3.v3.min.js" charset="utf-8"></script> -->
-		<!-- <script src="/viz/js/app.js"></script> -->
-		<script type="text/javascript">
-		$(document).on('ready',function(){
-			document.getElementById('audioElement').play()
-		})
-			
-		</script>
-	
+	<script src="http://code.jquery.com/jquery-2.x-git.min.js"></script>	
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
 	<script src="/viz/js/libs/dat.gui.min.js"></script>
 	<script src="/viz/js/GPUParticleSystem.js" charset="utf-8"></script>
 
 	<script>
+
+		$(document).on('ready',function(){
+			document.getElementById('audioElement').play()
+		})
 
 		var CONST = 255
 		var SIZE_MULT = 20
@@ -134,7 +128,7 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
-		function animate() {
+		function animate() {xw
 			$('.dg').html('');
 			requestAnimationFrame(animate);
 			
@@ -210,7 +204,7 @@
 			options.size = _ratio * SIZE_MULT;
 			options.lifetime = _ratio* LIFETIME_MULT;
 			options.positionRandomness = _ratio * POSITION_RANDOMNESS_RATE;
-			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;			
+			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;
 
 			// _col = 255 * _ratio
 			// // console.log(_col)
