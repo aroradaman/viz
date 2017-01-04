@@ -206,12 +206,40 @@
 			options.positionRandomness = _ratio * POSITION_RANDOMNESS_RATE;
 			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;
 
-			// _col = 255 * _ratio
-			// // console.log(_col)
-			// // var _temp_col = 'rgb(' + (_col) + ', ' + (_col) + ', ' + (_col) + ')';
-			// var _temp_col = 'rgb(' + (150) + ', ' + (_col) + ', ' + (150) + ')';
-			// // _temp_col = 'rbg(150,150,150)'
+			// _col = 120 + 50 * _ratio
+			// var _temp_col = 'rgb(' + (_col) + ', ' + (_col) + ',255)';
+			// // console.log(_temp_col)
 			// options.color = _temp_col
+
+			// if(_ratio<0.7){
+			// 	options.color = 0xbb88ff;
+			// 	options.color = 0x0040ff;
+			// }
+			// else
+
+			if(_ratio<0.5){
+				options.color = 0xbb44ff;
+			}
+			else if(_ratio<0.75) {
+				options.color = 0xbb88ff;
+			}
+			else {
+				options.color = 0x80ff80;
+				options.color = 0xbb00ff;
+			}
+
+			var _var = parseInt(_ratio*10)
+			
+			if(_var >= 9 ){
+				_var = 9
+			}
+
+			if(_var <= 0 ){
+				_var = 0
+			}
+
+			options.color = '0xba' + _var + '' +  _var + 'ff';
+			// console.log('0xbb' + _var + '' +  _var + 'ff');
 
 			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
 			spawnerOptions.spawnRate = _ratio * SPAWN_RATE_MULT;
@@ -224,5 +252,4 @@
 		}
 	</script>
 </body>
-
 </html>
