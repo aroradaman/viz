@@ -41,12 +41,12 @@
 		})
 
 		var CONST = 255
-		var SIZE_MULT = 20
+		var SIZE_MULT = 22
 		var TURBULENCE_MULT = 0.10
-		var LIFETIME_MULT = 3.5
-		var SPAWN_RATE_MULT = 500
-		var POSITION_RANDOMNESS_RATE = 0.05
-		var SIZE_RANDOMNESS_RATE = 0.15
+		var LIFETIME_MULT = 5
+		var SPAWN_RATE_MULT = 200
+		var POSITION_RANDOMNESS_RATE = 0.00
+		var SIZE_RANDOMNESS_RATE = 3
 		var MAX_RAD_X = 50;
 		var MAX_RAD_Y = 22;
 		var MAX_RAD_Z = 10;
@@ -217,7 +217,7 @@
 			// }
 			// else
 
-			if(_ratio<0.5){
+			/*if(_ratio<0.5){
 				options.color = 0xbb44ff;
 			}
 			else if(_ratio<0.75) {
@@ -227,7 +227,7 @@
 				options.color = 0x80ff80;
 				options.color = 0xbb00ff;
 			}
-
+*/
 			var _var = parseInt(_ratio*10)
 			
 			if(_var >= 9 ){
@@ -238,7 +238,7 @@
 				_var = 0
 			}
 
-			options.color = '0xba' + _var + '' +  _var + 'ff';
+			options.color = '0x' + _var + '' + _var + '' + _var + '' +  _var + 'ff';
 			// console.log('0xbb' + _var + '' +  _var + 'ff');
 
 			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
