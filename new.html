@@ -41,15 +41,15 @@
 		})
 
 		var CONST = 255
-		var SIZE_MULT = 22
-		var TURBULENCE_MULT = 0.10
-		var LIFETIME_MULT = 5
+		var SIZE_MULT = 30
+		var TURBULENCE_MULT = 10
+		var LIFETIME_MULT = 4
 		var SPAWN_RATE_MULT = 200
 		var POSITION_RANDOMNESS_RATE = 0.00
 		var SIZE_RANDOMNESS_RATE = 3
-		var MAX_RAD_X = 50;
-		var MAX_RAD_Y = 22;
-		var MAX_RAD_Z = 10;
+		var MAX_RAD_X = 45;
+		var MAX_RAD_Y = 20;
+		var MAX_RAD_Z = 20;
 
 		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 		var audioElement = document.getElementById('audioElement');
@@ -157,7 +157,8 @@
 						setProps(fData[indx], options, spawnerOptions);
 						setPos(fData[indx], angles[now], options, camera);
 
-						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 40;
+						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 20;
+						
 						camera.position.x = 0;
 						camera.position.y = 0;
 						// camera.position.z = 100;
