@@ -1,5 +1,5 @@
-
 <html lang="en">
+
 <head>
 	<title>three.js - gpu particle system</title>
 	<meta charset="utf-8">
@@ -10,247 +10,262 @@
 			margin: 0px;
 			overflow: hidden;
 		}
+
 		a {
 			color: #0078ff;
 		}
+
 		.dg {
-			right: auto!important;
-			left: 20px!important;
+			right: auto !important;
+			left: 20px !important;
 		}
 	</style>
 </head>
 
 <body style="padding:0; margin:0;">
-		<input type="hidden" id="fdata" val="{}">
-		<audio id="audioElement" src="/viz/audio/1.mp3"></audio>
-		<!-- <div>
+	<input type="hidden" id="fdata" val="{}">
+	<audio controls="controls" id="audioElement" src="/viz/audio/1.mp3"></audio>
+	<!-- <div>
 			<button onclick="document.getElementById('audioElement').play()">Play the Audio</button>
 			<button onclick="document.getElementById('audioElement').pause()">Pause the Audio</button>
 			<button onclick="document.getElementById('audioElement').volume+=0.1">Increase Volume</button>
 			<button onclick="document.getElementById('audioElement').volume-=0.1">Decrease Volume</button>
 		</div> -->
-	<script src="http://code.jquery.com/jquery-2.x-git.min.js"></script>	
+	<script src="http://code.jquery.com/jquery-2.x-git.min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
 	<script src="/viz/js/libs/dat.gui.min.js"></script>
 	<script src="/viz/js/GPUParticleSystem.js" charset="utf-8"></script>
 
 	<script>
 
-		$(document).on('ready',function(){
-			document.getElementById('audioElement').play()
-		})
+		$(document).on('ready', function () {
+			// document.getElementById('audioElement').play()
 
-		var CONST = 255
-		var SIZE_MULT = 20
-		var TURBULENCE_MULT = 10
-		var LIFETIME_MULT = 4
-		var SPAWN_RATE_MULT = 300
-		var POSITION_RANDOMNESS_RATE = 0.00
-		var SIZE_RANDOMNESS_RATE = 5
-		var MAX_RAD_X = 45;
-		var MAX_RAD_Y = 20;
-		var MAX_RAD_Z = 20;
 
-		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-		var audioElement = document.getElementById('audioElement');
-		var audioSrc = audioCtx.createMediaElementSource(audioElement);
-		var analyser = audioCtx.createAnalyser();
-			
-		// Bind our analyser to the media element source.
-		audioSrc.connect(analyser);
-		audioSrc.connect(audioCtx.destination);
-		var frequencyData = new Uint8Array(200);
+			$(document).click(function () {
+				console.log("click")
 
-		var camera, tick = 0,
-			scene, renderer, clock = new THREE.Clock(true),
-			controls, container, gui = new dat.GUI(),
-			options, spawnerOptions, particleSystem;
-		
-		init();
-		animate();
-		
-		function init() {
 
-			container = document.createElement('div');
-			document.body.appendChild(container);
-			camera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 1, 10000);
-			camera.position.z = 100;
-			scene = new THREE.Scene();
-			particleSystem = new THREE.GPUParticleSystem({
-				maxParticles: 250000
-			});
-			scene.add( particleSystem);
-			options = {
-				position: new THREE.Vector3(),
-				positionRandomness: .8,
-				velocity: new THREE.Vector3(),
-				velocityRandomness: .5,
-				color: 0xbb88ff,
-				// color: 'rbg(255,10,200)',
-				colorRandomness: .9,
-				turbulence: .5,
-				lifetime: 2,
-				size: 5,
-				sizeRandomness: 1
-			};
-			spawnerOptions = {
-				spawnRate: 15000,
-				horizontalSpeed: 1.5,
-				verticalSpeed: 1.33,
-				timeScale: 1
-			};
-			gui.add(options, "velocityRandomness", 0, 3);
-			gui.add(options, "positionRandomness", 0, 3);
-			gui.add(options, "size", 1, 200);
-			gui.add(options, "sizeRandomness", 0, 250);
-			gui.add(options, "colorRandomness", 0, 1);
-			gui.add(options, "lifetime", .1, 100);
-			gui.add(options, "turbulence", 0, 10);
-			gui.add(spawnerOptions, "spawnRate", 10, 3000000);
-			gui.add(spawnerOptions, "timeScale", -1, 1);
+				var CONST = 255
+				var SIZE_MULT = 20
+				var TURBULENCE_MULT = 10
+				var LIFETIME_MULT = 4
+				var SPAWN_RATE_MULT = 300
+				var POSITION_RANDOMNESS_RATE = 0.00
+				var SIZE_RANDOMNESS_RATE = 5
+				var MAX_RAD_X = 45;
+				var MAX_RAD_Y = 20;
+				var MAX_RAD_Z = 20;
 
-			renderer = new THREE.WebGLRenderer();
-			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			container.appendChild(renderer.domElement);
-			// setup controls
-			// controls = new THREE.TrackballControls(camera, renderer.domElement);
-			// controls.rotateSpeed = 5.0;
-			// controls.zoomSpeed = 2.2;
-			// controls.panSpeed = 1;
-			// controls.dynamicDampingFactor = 0.3;
-			window.addEventListener('resize', onWindowResize, false);
-		}
+				var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+				var audioElement = document.getElementById('audioElement');
+				var audioSrc = audioCtx.createMediaElementSource(audioElement);
+				var analyser = audioCtx.createAnalyser();
 
-		function onWindowResize() {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
-		}
+				// Bind our analyser to the media element source.
+				audioSrc.connect(analyser);
+				audioSrc.connect(audioCtx.destination);
+				var frequencyData = new Uint8Array(200);
 
-		function animate() {
-			$('.dg').html('');
-			requestAnimationFrame(animate);
-			
-			analyser.getByteFrequencyData(frequencyData);
-			var fData = frequencyData;
+				var camera, tick = 0,
+					scene, renderer, clock = new THREE.Clock(true),
+					controls, container, gui = new dat.GUI(),
+					options, spawnerOptions, particleSystem;
 
-			var delta = clock.getDelta() * spawnerOptions.timeScale;
-			tick += delta;
 
-			if (tick < 0) tick = 0;
 
-			if (delta > 0) {
+				function init() {
 
-				var now = 0;
-				var angles = []
-				var count = Object.keys(fData).length;
+					container = document.createElement('div');
+					document.body.appendChild(container);
+					camera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 1, 10000);
+					camera.position.z = 100;
+					scene = new THREE.Scene();
+					particleSystem = new THREE.GPUParticleSystem({
+						maxParticles: 250000
+					});
+					scene.add(particleSystem);
+					options = {
+						position: new THREE.Vector3(),
+						positionRandomness: .8,
+						velocity: new THREE.Vector3(),
+						velocityRandomness: .5,
+						color: 0xbb88ff,
+						// color: 'rbg(255,10,200)',
+						colorRandomness: .9,
+						turbulence: .5,
+						lifetime: 2,
+						size: 5,
+						sizeRandomness: 1
+					};
+					spawnerOptions = {
+						spawnRate: 15000,
+						horizontalSpeed: 1.5,
+						verticalSpeed: 1.33,
+						timeScale: 1
+					};
+					gui.add(options, "velocityRandomness", 0, 3);
+					gui.add(options, "positionRandomness", 0, 3);
+					gui.add(options, "size", 1, 200);
+					gui.add(options, "sizeRandomness", 0, 250);
+					gui.add(options, "colorRandomness", 0, 1);
+					gui.add(options, "lifetime", .1, 100);
+					gui.add(options, "turbulence", 0, 10);
+					gui.add(spawnerOptions, "spawnRate", 10, 3000000);
+					gui.add(spawnerOptions, "timeScale", -1, 1);
 
-				var _av = 0;
-				for (var i = 0; i < count; i++) {
-					angles.push(360/count * i);
+					renderer = new THREE.WebGLRenderer();
+					renderer.setPixelRatio(window.devicePixelRatio);
+					renderer.setSize(window.innerWidth, window.innerHeight);
+					container.appendChild(renderer.domElement);
+					// setup controls
+					// controls = new THREE.TrackballControls(camera, renderer.domElement);
+					// controls.rotateSpeed = 5.0;
+					// controls.zoomSpeed = 2.2;
+					// controls.panSpeed = 1;
+					// controls.dynamicDampingFactor = 0.3;
+					window.addEventListener('resize', onWindowResize, false);
 				}
 
-				for (var indx in fData) {
-        			if (fData.hasOwnProperty(indx)) {
-						
-						setProps(fData[indx], options, spawnerOptions);
-						setPos(fData[indx], angles[now], options, camera);
+				function onWindowResize() {
+					camera.aspect = window.innerWidth / window.innerHeight;
+					camera.updateProjectionMatrix();
+					renderer.setSize(window.innerWidth, window.innerHeight);
+				}
 
-						// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 20;
+				function animate() {
+					$('.dg').html('');
+					requestAnimationFrame(animate);
 
-						camera.position.x = 0;
-						camera.position.y = 0;
-						// camera.position.z = 100;
+					analyser.getByteFrequencyData(frequencyData);
+					var fData = frequencyData;
 
-						for (var x = 0; x < spawnerOptions.spawnRate * delta; x++) {
-							particleSystem.spawnParticle(options);
+					var delta = clock.getDelta() * spawnerOptions.timeScale;
+					tick += delta;
+
+					if (tick < 0) tick = 0;
+
+					if (delta > 0) {
+
+						var now = 0;
+						var angles = []
+						var count = Object.keys(fData).length;
+
+						var _av = 0;
+						for (var i = 0; i < count; i++) {
+							angles.push(360 / count * i);
 						}
-					_av += fData[indx]
-					now++;
+
+						for (var indx in fData) {
+							if (fData.hasOwnProperty(indx)) {
+
+								setProps(fData[indx], options, spawnerOptions);
+								setPos(fData[indx], angles[now], options, camera);
+
+								// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 20;
+
+								camera.position.x = 0;
+								camera.position.y = 0;
+								// camera.position.z = 100;
+
+								for (var x = 0; x < spawnerOptions.spawnRate * delta; x++) {
+									particleSystem.spawnParticle(options);
+								}
+								_av += fData[indx]
+								now++;
+							}
+						}
 					}
+					_av = _av / count;
+
+					camera.position.x = Math.sin(_av / CONST * Math.PI) * _av / CONST * MAX_RAD_X / 250;
+					camera.position.y = Math.cos(_av / CONST * Math.PI) * _av / CONST * MAX_RAD_Y / 250;
+
+					// controls.rotateSpeed = 5 + 5*_av;
+					// controls.update();
+
+					particleSystem.update(tick);
+					render();
 				}
-			}
-			_av = _av/count;
-			
-			camera.position.x = Math.sin(_av/CONST*Math.PI) * _av/CONST * MAX_RAD_X/250;
-			camera.position.y = Math.cos(_av/CONST*Math.PI) * _av/CONST * MAX_RAD_Y/250;
-			
-			// controls.rotateSpeed = 5 + 5*_av;
-			// controls.update();
 
-			particleSystem.update(tick);
-			render();
-		}
-		
-		function setPos(amp, angle, options){
+				function setPos(amp, angle, options) {
 
-			_rad = angle*Math.PI/180
-			options.position.x = Math.sin(_rad) * amp/CONST * MAX_RAD_X;
-			options.position.y = Math.cos(_rad) * amp/CONST * MAX_RAD_Y;
-			// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 40;
-			options.position.z = amp/CONST * MAX_RAD_Z;
-			// camera.position.z = 15 + _ratio
-			// console.log(_rad, options.position.x)
-		}
+					_rad = angle * Math.PI / 180
+					options.position.x = Math.sin(_rad) * amp / CONST * MAX_RAD_X;
+					options.position.y = Math.cos(_rad) * amp / CONST * MAX_RAD_Y;
+					// options.position.z = Math.sin(tick * spawnerOptions.horizontalSpeed + spawnerOptions.verticalSpeed) * 40;
+					options.position.z = amp / CONST * MAX_RAD_Z;
+					// camera.position.z = 15 + _ratio
+					// console.log(_rad, options.position.x)
+				}
 
-		function setProps(amp, options, spawnerOptions){
-			
-			_ratio = amp /  CONST;
-			
-			if (_ratio<0.1){
-				_ratio = 0.15
-			}
+				function setProps(amp, options, spawnerOptions) {
 
-			options.size = _ratio * SIZE_MULT;
-			options.lifetime = _ratio* LIFETIME_MULT;
-			options.positionRandomness = _ratio * POSITION_RANDOMNESS_RATE;
-			options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;
+					_ratio = amp / CONST;
 
-			// _col = 120 + 50 * _ratio
-			// var _temp_col = 'rgb(' + (_col) + ', ' + (_col) + ',255)';
-			// // console.log(_temp_col)
-			// options.color = _temp_col
+					if (_ratio < 0.1) {
+						_ratio = 0.15
+					}
 
-			// if(_ratio<0.7){
-			// 	options.color = 0xbb88ff;
-			// 	options.color = 0x0040ff;
-			// }
-			// else
+					options.size = _ratio * SIZE_MULT;
+					options.lifetime = _ratio * LIFETIME_MULT;
+					options.positionRandomness = _ratio * POSITION_RANDOMNESS_RATE;
+					options.sizeRandomness = _ratio * SIZE_RANDOMNESS_RATE;
 
-			/*if(_ratio<0.5){
-				options.color = 0xbb44ff;
-			}
-			else if(_ratio<0.75) {
-				options.color = 0xbb88ff;
-			}
-			else {
-				options.color = 0x80ff80;
-				options.color = 0xbb00ff;
-			}
-*/
-			var _var = parseInt(_ratio*10)
-			
-			if(_var >= 9 ){
-				_var = 9
-			}
+					// _col = 120 + 50 * _ratio
+					// var _temp_col = 'rgb(' + (_col) + ', ' + (_col) + ',255)';
+					// // console.log(_temp_col)
+					// options.color = _temp_col
 
-			if(_var <= 0 ){
-				_var = 0
-			}
+					// if(_ratio<0.7){
+					// 	options.color = 0xbb88ff;
+					// 	options.color = 0x0040ff;
+					// }
+					// else
 
-			options.color = '0x' + _var + '' + _var + '' + _var + '' +  _var + 'ff';
-			// console.log('0xbb' + _var + '' +  _var + 'ff');
+					/*if(_ratio<0.5){
+						options.color = 0xbb44ff;
+					}
+					else if(_ratio<0.75) {
+						options.color = 0xbb88ff;
+					}
+					else {
+						options.color = 0x80ff80;
+						options.color = 0xbb00ff;
+					}
+		*/
+					var _var = parseInt(_ratio * 10)
 
-			spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
-			spawnerOptions.spawnRate = _ratio * SPAWN_RATE_MULT;
-			// spawnerOptions.timeScale = 0.5 + (_ratio*0.5);
+					if (_var >= 9) {
+						_var = 9
+					}
 
-		}
+					if (_var <= 0) {
+						_var = 0
+					}
 
-		function render() {
-			renderer.render(scene, camera);
-		}
+					options.color = '0x' + _var + '' + _var + '' + _var + '' + _var + 'ff';
+					// console.log('0xbb' + _var + '' +  _var + 'ff');
+
+					spawnerOptions.turbulence = _ratio * TURBULENCE_MULT;
+					spawnerOptions.spawnRate = _ratio * SPAWN_RATE_MULT;
+					// spawnerOptions.timeScale = 0.5 + (_ratio*0.5);
+
+				}
+
+				function render() {
+					renderer.render(scene, camera);
+				}
+
+
+				init();
+				animate();
+
+			})
+
+			// $("#audioElement").click()
+		})
 	</script>
 </body>
+
 </html>
